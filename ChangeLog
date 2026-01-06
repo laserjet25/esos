@@ -1,5 +1,9 @@
 2026-01-05  Marc A. Smith  <marc.smith@quantum.com>
 
+	Merge branch 'watchdog_sysfs'
+
+	enabled CONFIG_WATCHDOG_SYSFS in kernel config
+
 	Merge branch 'corosync_qdevice'
 
 	added the corosync-qdevice package and associated rc/init scripts
