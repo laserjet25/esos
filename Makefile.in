@@ -239,10 +239,10 @@ dist_files	= $(addprefix $(DIST_FILES_DIR)/, \
 		libusb-1.0.22.tar.bz2 \
 		libusb_compat-0.1.7.tar.xz \
 		freeipmi-1.6.3.tar.gz \
-		libgcrypt-1.8.4.tar.bz2 \
-		libgpg-error-1.36.tar.bz2 \
+		libgcrypt-1.12.0.tar.bz2 \
+		libgpg-error-1.58.tar.bz2 \
 		smartmontools-7.4.tar.gz \
-		cryptsetup-1.7.5.tar.xz \
+		cryptsetup-2.8.4.tar.xz \
 		popt-1.16.tar.gz \
 		makedumpfile-1.7.6.tar.gz \
 		elfutils-0.176.tar.bz2 \
@@ -3856,7 +3856,10 @@ freeipmi.chroot: glibc.chroot libgcrypt.chroot
 libgcrypt.chroot: glibc.chroot libgpg-error.chroot
 	$(QUIET) $(ECHO) "### Building $(@)"
 	$(call chroot_only)
-	cd $(tgt_src_dir) && ./configure --prefix=/usr
+	$(QUIET) if [ ! -f "$(tgt_src_dir)/configure" ]; then \
+	  cd $(tgt_src_dir) && ./autogen.sh; \
+	fi
+	cd $(tgt_src_dir) && ./configure --prefix=/usr --disable-doc
 	$(MAKE) --directory=$(tgt_src_dir)
 	$(MAKE) --directory=$(tgt_src_dir) install
 	$(TOUCH) $(@)
@@ -3865,6 +3868,9 @@ libgcrypt.chroot: glibc.chroot libgpg-error.chroot
 libgpg-error.chroot: glibc.chroot
 	$(QUIET) $(ECHO) "### Building $(@)"
 	$(call chroot_only)
+	$(QUIET) if [ ! -f "$(tgt_src_dir)/configure" ]; then \
+	  cd $(tgt_src_dir) && ./autogen.sh; \
+	fi
 	$(SED) -i 's/namespace/pkg_&/' $(tgt_src_dir)/src/Makefile.{am,in} \
 	$(tgt_src_dir)/src/mkstrtable.awk
 	cd $(tgt_src_dir) && ./configure --prefix=/usr
@@ -3889,8 +3895,11 @@ cryptsetup.chroot: glibc.chroot libgcrypt.chroot lvm2.chroot \
 	util-linux.chroot popt.chroot eudev.chroot
 	$(QUIET) $(ECHO) "### Building $(@)"
 	$(call chroot_only)
+	$(QUIET) if [ ! -f "$(tgt_src_dir)/configure" ]; then \
+	  cd $(tgt_src_dir) && ./autogen.sh; \
+	fi
 	cd $(tgt_src_dir) && ./configure --prefix=/usr --disable-selinux \
-	--with-crypto_backend=gcrypt
+	--disable-asciidoc --disable-ssh-token
 	$(MAKE) --directory=$(tgt_src_dir)
 	$(MAKE) --directory=$(tgt_src_dir) install
 	$(TOUCH) $(@)
